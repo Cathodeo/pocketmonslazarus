@@ -1,13 +1,13 @@
 object Form1: TForm1
-  Left = 1864
-  Height = 418
-  Top = 478
-  Width = 593
+  Left = 180
+  Height = 614
+  Top = 104
+  Width = 1080
   Caption = 'Form1'
-  ClientHeight = 418
-  ClientWidth = 593
+  ClientHeight = 614
+  ClientWidth = 1080
   OnCreate = FormCreate
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.2.0.0'
   object Shape1: TShape
     Left = 8
     Height = 88
@@ -21,6 +21,7 @@ object Form1: TForm1
     Width = 128
     Caption = 'Attack1'
     TabOrder = 0
+    OnClick = Attack1Click
   end
   object Attack2: TButton
     Left = 448
@@ -54,12 +55,13 @@ object Form1: TForm1
     AutoSize = False
     Caption = 'Textbox'
     Font.Color = cl3DDkShadow
-    Font.Height = -21
+    Font.Height = -16
     Font.Name = 'Miriam Mono CLM'
     Font.Quality = fqProof
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
+    WordWrap = True
   end
   object SelfPicture: TImage
     Left = 16
@@ -124,9 +126,9 @@ object Form1: TForm1
     ParentColor = False
   end
   object DBConnection: TSQLite3Connection
-    Connected = True
+    Connected = False
     LoginPrompt = True
-    DatabaseName = '/home/tmmartin/Documents/Pascal/PokeBattle/pokemones'
+    DatabaseName = '/home/tmmartin/Documents/pocketmonslazarus-main/pokemones'
     KeepConnection = False
     Transaction = SQLTransaction1
     AlwaysUseBigint = False
@@ -134,7 +136,7 @@ object Form1: TForm1
     Top = 16
   end
   object SQLTransaction1: TSQLTransaction
-    Active = True
+    Active = False
     Database = DBConnection
     Left = 328
     Top = 16

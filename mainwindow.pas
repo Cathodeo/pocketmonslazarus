@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, SQLite3Conn, SQLDB, DB, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, ComCtrls, LCLType;
+  StdCtrls, ExtCtrls, ComCtrls, LCLType, cthreads;
 
 type
 
@@ -39,7 +39,10 @@ type
   //Contenedor para stats
 
   //Funciones
+  procedure Attack1Click(Sender: TObject);
   procedure FormCreate(Sender: TObject);
+  procedure BattleFlow(x: integer);
+  procedure AttackSelf(chosen: integer);
 
 
   private
@@ -55,18 +58,19 @@ var
   LevelSelf: integer;
   LevelFoe: integer;
   Errenege: integer;
-  Isunique: boolean = False;
-  SelfStats: array [1..5] of Integer;
-  FoeStats: array [1..5] of Integer;
-  SelfMoves: array [1..4] of Integer = (0, 0 , 0, 0);
-  FoeMoves: array [1..4] of Integer;
+  AttackUsed: String;
+  SelfStats: array [1..5] of integer;
+  FoeStats: array [1..5] of integer;
+  SelfMoves: array [1..4] of integer;
+  FoeMoves: array [1..4] of integer;
   //
 
   Selfname_var: String;
   FoeName_var: String;
 
   //Combate
-
+   MoveSelSelf: Integer;
+   MoveSelFoe: Integer;
    Damage: integer;
    IsParalyzed: boolean = False;
    IsBurnt: boolean = False;
@@ -160,7 +164,7 @@ begin
       SQLQuery1.SQL.Text := 'select HP, ATTACK, DEFENSE, SPECIAL, SPEED from POKEMON where POKEMON_NO = :SelectionFoe';
       SQLQuery1.ParamByName('SelectionFoe').AsInteger := PokeSelf;
       SQLQuery1.Open;
-      FoeStats[1] := SQLQuery1.FieldByName('HP').AsInteger;
+      FoeStats[1] := (SQLQuery1.FieldByName('HP').AsInteger) * 2.0 * (LevelFoe / 100)).AsInteger;
       FoeStats[2] := SQLQuery1.FieldByName('ATTACK').AsInteger;
       FoeStats[3] := SQLQuery1.FieldByName('DEFENSE').AsInteger;
       FoeStats[4] := SQLQuery1.FieldByName('SPECIAL').AsInteger;
@@ -171,44 +175,180 @@ begin
       FoeHP.Position := FoeHP.Max;
   //Movimientos
 
-      case(PokeSelf) of
-
-
-      //PIKACHU
-      1: SelfMoves[1] := 7;
-         SelfMoves[2] := 2;
-         SelfMoves[3] := 3;
-         SelfMoves[4] := 11;
-      //BULBASAUR
-      2: SelfMoves[1] := 4;
-         SelfMoves[2] := 3;
-         SelfMoves[3] := 9;
-         SelfMoves[4] := 2;
-      //SQUIRTLE
-      3: SelfMoves[1] := 6;
-         SelfMoves[2] := 8;
-         SelfMoves[3] := 3;
-         SelfMoves[4] := 2;
-      //CHARMANDER
-      4: SelfMoves[1] := 5;
-         SelfMoves[2] := 8;
-         SelfMoves[3] := 9;
-         SelfMoves[4] := 2;
-      //MEOWTH
-      5: SelfMoves[1] := 9;
-         SelfMoves[2] := 6;
-         SelfMoves[3] := 11;
-         SelfMoves[4] := 2;
-      //CHANSEY
-      6: SelfMoves[1] := 10;
-         SelfMoves[2] := 12;
-         SelfMoves[3] := 7;
-         SelfMoves[4] := 11;
+      case (PokeSelf) of
+        //PIKACHU
+        1:
+           begin
+           SelfMoves[1] := 7;
+           SelfMoves[2] := 2;
+           SelfMoves[3] := 3;
+           SelfMoves[4] := 11;
+           end;
+        //BULBASAUR
+        3:
+           begin
+           SelfMoves[1] := 4;
+           SelfMoves[2] := 3;
+           SelfMoves[3] := 9;
+           SelfMoves[4] := 2;
+           end;
+        //SQUIRTLE
+        4:
+           begin
+           SelfMoves[1] := 6;
+           SelfMoves[2] := 8;
+           SelfMoves[3] := 3;
+           SelfMoves[4] := 2;
+           end;
+        //CHARMANDER
+        2:
+           begin
+           SelfMoves[1] := 5;
+           SelfMoves[2] := 8;
+           SelfMoves[3] := 9;
+           SelfMoves[4] := 2;
+           end;
+        //MEOWTH
+        5:
+           begin
+           SelfMoves[1] := 9;
+           SelfMoves[2] := 6;
+           SelfMoves[3] := 11;
+           SelfMoves[4] := 2;
+           end;
+        //CHANSEY
+        6:
+           begin
+           SelfMoves[1] := 10;
+           SelfMoves[2] := 12;
+           SelfMoves[3] := 7;
+           SelfMoves[4] := 11;
+           end;
       end;
 
+      case (PokeFoe) of
+        //PIKACHU
+        1:
+           begin
+           FoeMoves[1] := 7;
+           FoeMoves[2] := 2;
+           FoeMoves[3] := 3;
+           FoeMoves[4] := 11;
+           end;
+        //BULBASAUR
+        3:
+           begin
+           FoeMoves[1] := 4;
+           FoeMoves[2] := 3;
+           FoeMoves[3] := 9;
+           FoeMoves[4] := 2;
+           end;
+        //SQUIRTLE
+        4:
+           begin
+           FoeMoves[1] := 6;
+           FoeMoves[2] := 8;
+           FoeMoves[3] := 3;
+           FoeMoves[4] := 2;
+           end;
+        //CHARMANDER
+        2:
+           begin
+           FoeMoves[1] := 5;
+           FoeMoves[2] := 8;
+           FoeMoves[3] := 9;
+           FoeMoves[4] := 2;
+           end;
+        //MEOWTH
+        5:
+           begin
+           FoeMoves[1] := 9;
+           FoeMoves[2] := 6;
+           FoeMoves[3] := 11;
+           FoeMoves[4] := 2;
+           end;
+        //CHANSEY
+        6:
+           begin
+           FoeMoves[1] := 10;
+           FoeMoves[2] := 12;
+           FoeMoves[3] := 7;
+           FoeMoves[4] := 11;
+           end;
+      end;
 
-  end;
+      //Populate Moves
 
+      SQLQuery1.SQL.Text := 'select NAME from MOVES where MOVE_NO = :MoveIndex';
+      SQLQuery1.ParamByName('MoveIndex').AsInteger := SelfMoves[1];
+      SQLQuery1.Open;
+      Attack1.Caption:= SQLQuery1.FieldByName('NAME').AsString;
+      SQLQuery1.Close;
+
+      SQLQuery1.SQL.Text := 'select NAME from MOVES where MOVE_NO = :MoveIndex';
+      SQLQuery1.ParamByName('MoveIndex').AsInteger := SelfMoves[2];
+      SQLQuery1.Open;
+      Attack2.Caption:= SQLQuery1.FieldByName('NAME').AsString;
+      SQLQuery1.Close;
+
+      SQLQuery1.SQL.Text := 'select NAME from MOVES where MOVE_NO = :MoveIndex';
+      SQLQuery1.ParamByName('MoveIndex').AsInteger := SelfMoves[3];
+      SQLQuery1.Open;
+      Attack3.Caption:= SQLQuery1.FieldByName('NAME').AsString;
+      SQLQuery1.Close;
+
+      SQLQuery1.SQL.Text := 'select NAME from MOVES where MOVE_NO = :MoveIndex';
+      SQLQuery1.ParamByName('MoveIndex').AsInteger := SelfMoves[4];
+      SQLQuery1.Open;
+      Attack4.Caption:= SQLQuery1.FieldByName('NAME').AsString;
+      SQLQuery1.Close;
+
+      Textbox.Caption:= Format('The TRAINER sent: %s', [FoeName_var]);
+
+    end;
+
+    procedure Delay(dt: DWORD);
+    var
+      tc : DWORD;
+    begin
+      tc := GetTickCount;
+      while (GetTickCount < tc + dt) and (not Application.Terminated) do
+        Application.ProcessMessages;
+        end;
+
+
+    procedure TForm1.AttackSelf(chosen: integer);
+    begin
+         Delay(1000);
+         SQLQuery1.SQL.Text := 'select NAME from MOVES where MOVE_NO = :MoveIndex';
+         SQLQuery1.ParamByName('MoveIndex').AsInteger := SelfMoves[chosen];
+         SQLQuery1.Open;
+         AttackUsed:= SQLQuery1.FieldByName('NAME').AsString;
+         SQLQuery1.Close;
+         Textbox.Caption:= Format('%s used %s!', [SelfName_var, AttackUsed]);
+
+    end;
+
+    procedure TForm1.BattleFlow(x: integer);
+
+    begin
+
+          Attack1.Enabled := False;
+          Attack2.Enabled := False;
+          Attack3.Enabled := False;
+          Attack4.Enabled := False;
+          AttackSelf(x);
+
+
+
+    end;
+
+
+    procedure TForm1.Attack1Click(Sender: TObject);
+
+    begin
+        Battleflow(1);
+    end;
 
 
 
