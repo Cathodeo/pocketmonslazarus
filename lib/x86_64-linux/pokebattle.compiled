@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="/usr/bin/fpc" Date="1680204690"/>
+  <Params Value=" -MObjFPC -Scghi -Cg -O1 -gw3 -gl -l -vewnhibq -Fi/home/tmmartin/Documents/Pascal/PokeBattle/lib/x86_64-linux -Fu/home/tmmartin/.lazarus/lib/units/x86_64-linux/gtk2 -Fu/home/tmmartin/.lazarus/lib/LCLBase/units/x86_64-linux -Fu/home/tmmartin/.lazarus/lib/freetypelaz/lib/x86_64-linux -Fu/usr/lib/lazarus/2.2.6/components/lazutils/lib/x86_64-linux -Fu/usr/lib/lazarus/2.2.6/packager/units/x86_64-linux -Fu/home/tmmartin/Documents/Pascal/PokeBattle/ -FU/home/tmmartin/Documents/Pascal/PokeBattle/lib/x86_64-linux/ -FE/home/tmmartin/Documents/Pascal/PokeBattle/ -o/home/tmmartin/Documents/Pascal/PokeBattle/pokebattle -dLCL -dLCLgtk2 pokebattle.lpr"/>
+  <Complete Value="False"/>
+</CONFIG>

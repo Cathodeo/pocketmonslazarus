@@ -1,0 +1,156 @@
+object Form1: TForm1
+  Left = 1864
+  Height = 418
+  Top = 478
+  Width = 593
+  Caption = 'Form1'
+  ClientHeight = 418
+  ClientWidth = 593
+  OnCreate = FormCreate
+  LCLVersion = '2.2.6.0'
+  object Shape1: TShape
+    Left = 8
+    Height = 88
+    Top = 320
+    Width = 297
+  end
+  object Attack1: TButton
+    Left = 312
+    Height = 48
+    Top = 312
+    Width = 128
+    Caption = 'Attack1'
+    TabOrder = 0
+  end
+  object Attack2: TButton
+    Left = 448
+    Height = 48
+    Top = 312
+    Width = 128
+    Caption = 'Attack2'
+    TabOrder = 1
+  end
+  object Attack3: TButton
+    Left = 312
+    Height = 48
+    Top = 360
+    Width = 128
+    Caption = 'Attack3'
+    TabOrder = 2
+  end
+  object Attack4: TButton
+    Left = 448
+    Height = 48
+    Top = 360
+    Width = 128
+    Caption = 'Attack4'
+    TabOrder = 3
+  end
+  object Textbox: TLabel
+    Left = 16
+    Height = 80
+    Top = 320
+    Width = 560
+    AutoSize = False
+    Caption = 'Textbox'
+    Font.Color = cl3DDkShadow
+    Font.Height = -21
+    Font.Name = 'Miriam Mono CLM'
+    Font.Quality = fqProof
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object SelfPicture: TImage
+    Left = 16
+    Height = 114
+    Top = 192
+    Width = 130
+    Proportional = True
+    Stretch = True
+  end
+  object FoePicture: TImage
+    Left = 440
+    Height = 114
+    Top = 8
+    Width = 130
+    Proportional = True
+    Stretch = True
+  end
+  object SelfHP: TProgressBar
+    Left = 344
+    Height = 20
+    Top = 240
+    Width = 208
+    TabOrder = 4
+  end
+  object FoeHP: TProgressBar
+    Left = 16
+    Height = 20
+    Top = 48
+    Width = 208
+    TabOrder = 5
+  end
+  object SelfName: TLabel
+    Left = 344
+    Height = 19
+    Top = 208
+    Width = 65
+    Caption = 'SelfName'
+    ParentColor = False
+  end
+  object FoeName: TLabel
+    Left = 16
+    Height = 19
+    Top = 16
+    Width = 64
+    Caption = 'FoeName'
+    ParentColor = False
+  end
+  object SelfLevel: TLabel
+    Left = 496
+    Height = 19
+    Top = 208
+    Width = 59
+    Caption = 'SelfLevel'
+    ParentColor = False
+  end
+  object FoeLevel: TLabel
+    Left = 159
+    Height = 19
+    Top = 16
+    Width = 58
+    Caption = 'FoeLevel'
+    ParentColor = False
+  end
+  object DBConnection: TSQLite3Connection
+    Connected = True
+    LoginPrompt = True
+    DatabaseName = '/home/tmmartin/Documents/Pascal/PokeBattle/pokemones'
+    KeepConnection = False
+    Transaction = SQLTransaction1
+    AlwaysUseBigint = False
+    Left = 296
+    Top = 16
+  end
+  object SQLTransaction1: TSQLTransaction
+    Active = True
+    Database = DBConnection
+    Left = 328
+    Top = 16
+  end
+  object DataSource1: TDataSource
+    DataSet = SQLQuery1
+    Left = 360
+    Top = 16
+  end
+  object SQLQuery1: TSQLQuery
+    FieldDefs = <>
+    Database = DBConnection
+    Transaction = SQLTransaction1
+    Params = <>
+    Macros = <>
+    Left = 392
+    Top = 16
+  end
+end
