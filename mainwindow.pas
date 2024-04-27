@@ -38,11 +38,18 @@ type
   SQLTransaction1: TSQLTransaction;
   //Contenedor para stats
 
-  //Funciones
-  procedure Attack1Click(Sender: TObject);
+  //Funciones del formulario
+  procedure Attack2Click(Sender: TObject);
+  procedure Attack3Click(Sender: TObject);
+  procedure Attack4Click(Sender: TObject);
   procedure FormCreate(Sender: TObject);
+  procedure Attack1Click(Sender: TObject);
+
+
+  //Funciones de batalla
   procedure BattleFlow(x: integer);
-  procedure AttackSelf(chosen: integer);
+  procedure AttackProcess(chosen: integer);
+  procedure DamageFormula(chosen: integer);
 
 
   private
@@ -57,10 +64,15 @@ var
   PokeFoe: integer;
   LevelSelf: integer;
   LevelFoe: integer;
-  Errenege: integer;
   AttackUsed: String;
+  TypeAttacker: Integer;
+  TypeAttack: Integer;
+  TypeDefender: Integer;
+  Matchup: Integer;
   SelfStats: array [1..5] of integer;
+  SelfBuff: array[1..5] of Integer;
   FoeStats: array [1..5] of integer;
+  FoeBuff: array [1..5] of integer;
   SelfMoves: array [1..4] of integer;
   FoeMoves: array [1..4] of integer;
   //
@@ -69,6 +81,7 @@ var
   FoeName_var: String;
 
   //Combate
+   Isfoe: boolean;
    MoveSelSelf: Integer;
    MoveSelFoe: Integer;
    Damage: integer;
@@ -164,7 +177,7 @@ begin
       SQLQuery1.SQL.Text := 'select HP, ATTACK, DEFENSE, SPECIAL, SPEED from POKEMON where POKEMON_NO = :SelectionFoe';
       SQLQuery1.ParamByName('SelectionFoe').AsInteger := PokeSelf;
       SQLQuery1.Open;
-      FoeStats[1] := (SQLQuery1.FieldByName('HP').AsInteger) * 2.0 * (LevelFoe / 100)).AsInteger;
+      FoeStats[1] := round((SQLQuery1.FieldByName('HP').AsInteger) * 2 * (LevelFoe / 50));
       FoeStats[2] := SQLQuery1.FieldByName('ATTACK').AsInteger;
       FoeStats[3] := SQLQuery1.FieldByName('DEFENSE').AsInteger;
       FoeStats[4] := SQLQuery1.FieldByName('SPECIAL').AsInteger;
@@ -304,20 +317,162 @@ begin
       SQLQuery1.Close;
 
       Textbox.Caption:= Format('The TRAINER sent: %s', [FoeName_var]);
-
+      SelfBuff[1] := 0;
     end;
+
+
 
     procedure Delay(dt: DWORD);
     var
       tc : DWORD;
     begin
-      tc := GetTickCount;
-      while (GetTickCount < tc + dt) and (not Application.Terminated) do
+      tc := GetTickCount64;
+      while (GetTickCount64 < tc + dt) and (not Application.Terminated) do
         Application.ProcessMessages;
         end;
 
 
-    procedure TForm1.AttackSelf(chosen: integer);
+    procedure Tform1.DamageFormula(chosen: integer);
+    var damage: integer = 0;
+        i: integer = 0;
+
+    begin
+         Delay(500);
+         Textbox.Caption:= Format('DEBUG: DAMAGE BEFORE FORMULA %d!', [damage]);
+         Delay(500);
+        SQLQuery1.SQL.Text := 'select POWER from MOVES where MOVE_NO = :MoveIndex';
+        SQLQuery1.ParamByName('MoveIndex').AsInteger := SelfMoves[chosen];
+        SQLQuery1.Open;
+        damage := SQLQuery1.FieldByName('POWER').AsInteger;
+        SQLQuery1.Close;
+        Delay(500);
+        Textbox.Caption:= Format('DEBUG: DAMAGE AFTER QUERY %d!', [damage]);
+        Delay(500);
+
+        if (damage = 0) then
+        begin
+           case (SelfMoves[chosen]) of
+           2:
+              begin
+                   Delay(1000);
+                   Textbox.Caption:= Format('%s ATTACK was lowered!', [FoeName_var]);
+                   FoeStats[2] := round(FoeStats[2] - (FoeStats[2] * 0.33));
+
+              end;
+           3:
+              begin
+                   Delay(1000);
+                   Textbox.Caption:= Format('%s DEFENSE was lowered!', [FoeName_var]);
+                   FoeStats[3] := round(FoeStats[3] - (FoeStats[3] * 0.33));
+              end;
+           12:
+              begin
+
+                   FoeStats[1] := round(FoeStats[1] + (FoeStats[3] * 0.5));
+                   if (Foestats[1] > SelfHP.Max)
+                   then
+                         begin
+                         FoeStats[1] := SelfHP.Max;
+                         Textbox.Caption:= Format('%s HP maxed out!', [SelfName_var])
+
+                         end
+                   else
+                        begin
+                        Textbox.Caption:= Format('%s Recovered health!', [SelfName_var])
+                        end
+
+
+
+              end;
+            end;
+           end;
+           Delay(500);
+           Textbox.Caption:= Format('DEBUG: NUMBER OF CHOSEN ATTACK! %d!', [Selfmoves[chosen]]);
+           Delay(500);
+           //Todo lo que reduce salud
+           if (Selfmoves[chosen] <> 2) or (Selfmoves[chosen] <> 3) or (Selfmoves[chosen] <> 12) then
+                    begin
+                    Delay(500);
+                    Textbox.Caption:= Format('DEBUG: DAMAGING MOVE CONDITIONS! %d!', [damage]);
+                    Delay(500);
+                    SQLQuery1.SQL.Text := 'select TYPE from MOVES where MOVE_NO = :MoveIndex';
+                    SQLQuery1.ParamByName('MoveIndex').AsInteger := SelfMoves[chosen];
+                    SQLQuery1.Open;
+                    TypeAttack := SQLQuery1.FieldByName('TYPE').AsInteger;
+                    SQLQuery1.Close;
+
+                    SQLQuery1.SQL.Text := 'select TYPE from POKEMON where POKEMON_NO = :ChosenPoke';
+                    SQLQuery1.ParamByName('ChosenPoke').AsInteger := Pokeself;
+                    SQLQuery1.Open;
+                    TypeAttacker := SQLQuery1.FieldByName('TYPE').AsInteger;
+                    SQLQuery1.Close;
+
+
+                    SQLQuery1.SQL.Text := 'select TYPE from POKEMON where POKEMON_NO = :ChosenFoe';
+                    SQLQuery1.ParamByName('ChosenFoe').AsInteger := Pokefoe;
+                    SQLQuery1.Open;
+                    TypeDefender := SQLQuery1.FieldByName('TYPE').AsInteger;
+                    SQLQuery1.Close;
+
+
+                    delay(500);
+                    Textbox.Caption:= Format('DEBUG: TYPE OF ATTACK: %d, TYPE OF FOE: %d', [TypeAttack, TypeDefender]);
+                    delay(500);
+
+                    if (TypeAttacker = TypeAttack)
+                    then
+                    damage := round(damage * 1.5);
+
+                     delay(500);
+                     Textbox.Caption:= Format('DEBUG: DAMAGE AFTER STAB: %d!', [damage]);
+                     delay(500);
+
+
+                    SQLQuery1.SQL.Text := 'select T_MODIFIER from MATCHUPS where T_ATTACK = :TypeMove and T_FOE = :TypeFoe';
+                    SQLQuery1.ParamByName('TypeMove').AsInteger := TypeAttack;
+                    SQLQuery1.ParamByName('TypeFoe').AsInteger := TypeDefender;
+                    SQLQuery1.Open;
+                    if (SQLQuery1.FieldByName('T_MODIFIER').IsNull)
+                    then
+                    Matchup := 0
+                    else
+                    Matchup := SQLQuery1.FieldByName('T_MODIFIER').AsInteger;
+
+                    SQLQuery1.Close;
+
+                    if (Matchup = 1)
+                    then
+
+                    begin
+                    damage := round(damage * 2);
+                    Textbox.Caption:= ('It was super effective!')
+                    end
+
+                    else if (Matchup = 2)
+                    then
+
+                    begin
+                    damage := round(damage * 0.5);
+                    Textbox.Caption:= ('Its not very effective!');
+                    end;
+
+                    delay(500);
+                    Textbox.Caption:= Format('DEBUG: FINAL DAMAGE AFTER TYPE MATCHUPS %d!', [damage]);
+                    delay(500);
+                    end;
+
+
+
+        for i:= 0 to damage do
+        begin
+        FoeHP.Position := FoeHP.Position - 1;
+        delay(10);
+        end
+       end;
+
+
+
+    procedure TForm1.AttackProcess(chosen: integer);
     begin
          Delay(1000);
          SQLQuery1.SQL.Text := 'select NAME from MOVES where MOVE_NO = :MoveIndex';
@@ -326,6 +481,8 @@ begin
          AttackUsed:= SQLQuery1.FieldByName('NAME').AsString;
          SQLQuery1.Close;
          Textbox.Caption:= Format('%s used %s!', [SelfName_var, AttackUsed]);
+         Delay(1000);
+         DamageFormula(chosen);
 
     end;
 
@@ -337,7 +494,7 @@ begin
           Attack2.Enabled := False;
           Attack3.Enabled := False;
           Attack4.Enabled := False;
-          AttackSelf(x);
+          AttackProcess(x);
 
 
 
@@ -346,9 +503,24 @@ begin
 
     procedure TForm1.Attack1Click(Sender: TObject);
 
-    begin
-        Battleflow(1);
-    end;
+      begin
+          Battleflow(1);
+      end;
+
+    procedure TForm1.Attack2Click(Sender: TObject);
+      begin
+         Battleflow(2);
+      end;
+
+    procedure TForm1.Attack3Click(Sender: TObject);
+      begin
+         Battleflow(3);
+      end;
+
+    procedure TForm1.Attack4Click(Sender: TObject);
+      begin
+         Battleflow(4);
+      end;
 
 
 

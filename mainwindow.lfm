@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 180
+  Left = 336
   Height = 614
-  Top = 104
+  Top = 171
   Width = 1080
   Caption = 'Form1'
   ClientHeight = 614
@@ -30,6 +30,7 @@ object Form1: TForm1
     Width = 128
     Caption = 'Attack2'
     TabOrder = 1
+    OnClick = Attack2Click
   end
   object Attack3: TButton
     Left = 312
@@ -38,6 +39,7 @@ object Form1: TForm1
     Width = 128
     Caption = 'Attack3'
     TabOrder = 2
+    OnClick = Attack3Click
   end
   object Attack4: TButton
     Left = 448
@@ -46,12 +48,13 @@ object Form1: TForm1
     Width = 128
     Caption = 'Attack4'
     TabOrder = 3
+    OnClick = Attack4Click
   end
   object Textbox: TLabel
-    Left = 16
-    Height = 80
+    Left = 8
+    Height = 88
     Top = 320
-    Width = 560
+    Width = 296
     AutoSize = False
     Caption = 'Textbox'
     Font.Color = cl3DDkShadow
@@ -91,6 +94,7 @@ object Form1: TForm1
     Height = 20
     Top = 48
     Width = 208
+    Smooth = True
     TabOrder = 5
   end
   object SelfName: TLabel
